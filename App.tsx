@@ -18,7 +18,7 @@ import TextElement from './components/TextElement';
 import * as Colors from './assets/colors.json';
 import ModalSubtitles from './components/ModalSubtitles';
 import {requestStoragePermission} from './utils/permission';
-import Config from 'react-native-config';
+// import Config from 'react-native-config';
 
 const {fs} = ReactNativeBlobUtil;
 
