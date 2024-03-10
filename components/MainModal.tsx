@@ -9,14 +9,14 @@ import {
 import TextElement from './TextElement';
 import * as Colors from '../assets/colors.json';
 
-interface ModalSubtitlesPropsType {
+interface MainModalPropsType {
   title: string;
   content: string;
   saveDocument(): void;
   shareDocument(): void;
 }
 
-const ModalSubtitles: React.FC<ModalSubtitlesPropsType> = ({
+const MainModal: React.FC<MainModalPropsType> = ({
   title,
   content,
   saveDocument,
@@ -83,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ModalSubtitles;
+export default MainModal;
