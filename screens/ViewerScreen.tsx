@@ -1,27 +1,34 @@
 import React from 'react';
 import {
-  Dimensions,
   ScrollView,
+  Share,
   StyleSheet,
   TouchableOpacity,
   View,
 } from 'react-native';
-import TextElement from './TextElement';
+import TextElement from '../components/TextElement';
 import * as Colors from '../assets/colors.json';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-interface MainModalPropsType {
-  title: string;
-  content: string;
-  saveDocument(): void;
-  shareDocument(): void;
-}
+type RootStackParamList = {
+  route: never;
+};
 
-const MainModal: React.FC<MainModalPropsType> = ({
-  title,
-  content,
-  saveDocument,
-  shareDocument,
-}) => {
+type ViewerScreenType = NativeStackScreenProps<RootStackParamList>;
+
+const ViewerScreen: React.FC<ViewerScreenType> = ({route}) => {
+  // @ts-ignore:
+  const content = route.params!.content as string;
+  // @ts-ignore:
+  const title = route.params!.title as string;
+
+  const shareDocument = async () => {
+    await Share.share({
+      title: 'PDF Parser - Results',
+      message: content,
+    });
+  };
+
   return (
     <View style={styles.modalContainer}>
       <TextElement cStyle={styles.black} fontSize={'lg'} fontWeight={'bold'}>
@@ -29,29 +36,16 @@ const MainModal: React.FC<MainModalPropsType> = ({
       </TextElement>
       <View style={styles.scrollview}>
         <ScrollView>
-          <TextElement cStyle={styles.black} fontSize={'m'}>
-            {content.trim()}
-          </TextElement>
+          <TextElement fontSize={'m'}>{content.trim()}</TextElement>
         </ScrollView>
       </View>
       <View style={styles.controllerContainer}>
-        <TouchableOpacity
-          onPress={saveDocument}
-          style={styles.button}
-          activeOpacity={0.8}>
-          <TextElement cStyle={styles.black} fontSize={'m'}>
-            Save Document
-          </TextElement>
-          <TextElement cStyle={styles.black} fontSize={'sm'}>
-            (local device)
-          </TextElement>
-        </TouchableOpacity>
         <TouchableOpacity
           onPress={shareDocument}
           style={[styles.button, {backgroundColor: Colors.secondary}]}
           activeOpacity={0.8}>
           <TextElement cStyle={styles.white} fontSize={'m'}>
-            Share Document
+            Share Content
           </TextElement>
           <TextElement cStyle={styles.white} fontSize={'sm'}>
             (between apps)
@@ -64,12 +58,18 @@ const MainModal: React.FC<MainModalPropsType> = ({
 
 const styles = StyleSheet.create({
   modalContainer: {
-    height: Dimensions.get('window').height * 0.7,
-    padding: '6%',
+    flex: 1,
+    justifyContent: 'space-between',
+    padding: '5%',
     backgroundColor: Colors.white,
   },
   scrollview: {
-    height: '80%',
+    height: '85%',
+    borderWidth: 1,
+    borderColor: Colors.secondary,
+    borderRadius: 8,
+    overflow: 'hidden',
+    padding: '4%',
   },
   black: {
     color: Colors.black,
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 50,
-    width: Dimensions.get('window').width * 0.42,
+    width: '100%',
     borderWidth: 1,
     borderRadius: 8,
     alignSelf: 'center',
@@ -92,4 +92,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MainModal;
+export default ViewerScreen;

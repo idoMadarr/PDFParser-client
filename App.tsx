@@ -1,8 +1,11 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import MainScreen from './screens/MainScreen';
+
+// Screens
+import ConvertorScreen from './screens/ConvertorScreen';
 import RepositoryScreen from './screens/RepositoryScreen';
+import ViewerScreen from './screens/ViewerScreen';
 
 const App = () => {
   const AppNavigator = createNativeStackNavigator();
@@ -10,8 +13,9 @@ const App = () => {
   return (
     <NavigationContainer>
       <AppNavigator.Navigator screenOptions={{headerShown: false}}>
-        <AppNavigator.Screen name={'main'} component={MainScreen} />
+        <AppNavigator.Screen name={'convertor'} component={ConvertorScreen} />
         <AppNavigator.Screen name={'repo'} component={RepositoryScreen} />
+        <AppNavigator.Screen name={'viewer'} component={ViewerScreen} />
       </AppNavigator.Navigator>
     </NavigationContainer>
   );

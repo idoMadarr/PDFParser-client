@@ -1,6 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   SafeAreaView,
   Share,
@@ -9,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import ReactNativeBlobUtil from 'react-native-blob-util';
 import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import ImagePicker from 'react-native-image-crop-picker';
 import DocumentPicker, {types} from 'react-native-document-picker';
@@ -18,19 +16,10 @@ import TextElement from '../components/TextElement';
 import * as Colors from '../assets/colors.json';
 import MainModal from '../components/MainModal';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {handleFileStorage} from '../utils/fileStorage';
+import {writeFile} from '../utils/fileStorage';
 import RepoIcon from '../assets/vectors/repo.svg';
-
-const {fs} = ReactNativeBlobUtil;
-
-const pickerOptions = {
-  freeStyleCropEnabled: true,
-  cropping: true,
-  // includeBase64: true,
-  cropperChooseText: 'approve',
-  loadingLabelText: 'Loading...',
-  cropperCancelText: 'cancel',
-};
+import LoadingOverlay from '../components/LoadingOverlay';
+import Config from 'react-native-config';
 
 const defaultState = {
   title: '',
@@ -41,9 +30,9 @@ type RootStackParamList = {
   navigation: never;
 };
 
-type MainScreenType = NativeStackScreenProps<RootStackParamList>;
+type ConvertorScreenType = NativeStackScreenProps<RootStackParamList>;
 
-const MainScreen: React.FC<MainScreenType> = ({navigation}) => {
+const ConvertorScreen: React.FC<ConvertorScreenType> = ({navigation}) => {
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -51,61 +40,16 @@ const MainScreen: React.FC<MainScreenType> = ({navigation}) => {
 
   useEffect(() => {
     if (fileContent.content.length) {
-      changeModalHeight(1);
+      bottomSheetRef.current?.snapToIndex(1);
       setIsLoading(false);
     }
   }, [fileContent.content]);
 
-  const changeModalHeight = (index: number) => {
-    bottomSheetRef.current?.snapToIndex(index);
-  };
-
   const shareDocument = async () => {
-    const result = await Share.share({
+    await Share.share({
       title: fileContent.title,
       message: fileContent.content,
     });
-    console.log(result);
-  };
-
-  const saveDocument = async () => {
-    const path = `${fs.dirs.DownloadDir}/${fileContent.title}.txt`;
-
-    await fs
-      .writeFile(path, fileContent.content, 'utf8')
-      .then(async () => {
-        handleFileStorage(path);
-        bottomSheetRef.current?.close();
-      })
-      .catch(err => console.log(err));
-  };
-
-  const selectImage = () => {
-    ImagePicker.openPicker(pickerOptions)
-      .then(async image => {
-        const formData = new FormData();
-        formData.append('file', {
-          uri: image.path,
-          type: image.mime,
-          name: image.modificationDate,
-        });
-
-        const test = await axios.post(
-          'https://pdfparser-server.onrender.com/store_image',
-          // 'http://192.168.2.77:8080/store_image',
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          },
-        );
-
-        console.log(test.data);
-      })
-      .catch(e => {
-        console.log(e);
-      });
   };
 
   const selectPdf = async () => {
@@ -123,8 +67,7 @@ const MainScreen: React.FC<MainScreenType> = ({navigation}) => {
 
       setIsLoading(true);
       const response = await axios.post(
-        'https://pdfparser-server.onrender.com/parser_pdf',
-        // 'http://192.168.2.77:8080/parser_pdf',
+        `${Config.PRODUCTION_API}parser_pdf`,
         formData,
         {
           headers: {
@@ -132,20 +75,47 @@ const MainScreen: React.FC<MainScreenType> = ({navigation}) => {
           },
         },
       );
-      console.log(response.data);
 
-      setIsLoading(false);
       setFileContent({
         title:
           response.data.info.Title ||
           new Date(Date.now()).toISOString().toString(),
         content: response.data.text,
       });
+      setIsLoading(false);
     } catch (e) {
       console.log(e);
       setIsLoading(false);
     }
   };
+
+  // const selectImage = () => {
+  //   ImagePicker.openPicker(pickerOptions)
+  //     .then(async image => {
+  //       const formData = new FormData();
+  //       formData.append('file', {
+  //         uri: image.path,
+  //         type: image.mime,
+  //         name: image.modificationDate,
+  //       });
+
+  //       const response = await axios.post(
+  //         'https://pdfparser-server.onrender.com/store_image',
+  //         // 'http://192.168.2.77:8080/store_image',
+  //         formData,
+  //         {
+  //           headers: {
+  //             'Content-Type': 'multipart/form-data',
+  //           },
+  //         },
+  //       );
+
+  //       console.log(response.data);
+  //     })
+  //     .catch(e => {
+  //       console.log(e);
+  //     });
+  // };
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -160,22 +130,9 @@ const MainScreen: React.FC<MainScreenType> = ({navigation}) => {
 
   const snapPoints = useMemo(() => ['25%', '70%', '100%'], []);
 
-  const overlaySpinner = (
-    <View style={styles.loadingContainer}>
-      <TextElement cStyle={styles.white} fontSize={'lg'}>
-        Parsing your file
-      </TextElement>
-      <TextElement cStyle={styles.white} fontSize={'m'}>
-        This proccess can take few moments
-      </TextElement>
-      <ActivityIndicator size={'large'} color={'white'} />
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.screen}>
       <StatusBar backgroundColor={Colors.white} barStyle={'dark-content'} />
-      {isLoading && overlaySpinner}
       <View style={styles.titleContainer}>
         <TextElement fontWeight={'bold'} cStyle={styles.title} fontSize={'xl'}>
           {'PDF to TXT\nConvertor'}
@@ -201,8 +158,15 @@ const MainScreen: React.FC<MainScreenType> = ({navigation}) => {
         <TextElement fontWeight={'bold'} cStyle={styles.white} fontSize={'lg'}>
           Upload PDF
         </TextElement>
+        <TextElement cStyle={styles.white} fontSize={'sm'}>
+          (local device)
+        </TextElement>
       </TouchableOpacity>
-      <View style={{height: '20%'}} />
+      <View style={styles.availableSection}>
+        <TextElement fontSize={'sm'}>
+          @ Available and free for unrestricted use.
+        </TextElement>
+      </View>
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
@@ -216,10 +180,23 @@ const MainScreen: React.FC<MainScreenType> = ({navigation}) => {
         <MainModal
           title={fileContent.title}
           content={fileContent.content}
-          saveDocument={saveDocument}
+          saveDocument={writeFile.bind(
+            this,
+            fileContent.title,
+            fileContent.content,
+            () => {
+              bottomSheetRef.current?.close();
+              // @ts-ignore:
+              navigation.navigate('viewer', {
+                content: fileContent.content,
+                title: fileContent.title,
+              });
+            },
+          )}
           shareDocument={shareDocument}
         />
       </BottomSheet>
+      {isLoading && <LoadingOverlay />}
     </SafeAreaView>
   );
 };
@@ -249,17 +226,6 @@ const styles = StyleSheet.create({
     marginHorizontal: '5%',
     height: '28%',
   },
-  loadingContainer: {
-    height: '100%',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000000b6',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 100,
-  },
   repoContainer: {
     position: 'absolute',
     top: '5%',
@@ -271,6 +237,10 @@ const styles = StyleSheet.create({
   lineheight: {
     lineHeight: 26,
   },
+  availableSection: {
+    height: '20%',
+    justifyContent: 'flex-end',
+  },
 });
 
-export default MainScreen;
+export default ConvertorScreen;

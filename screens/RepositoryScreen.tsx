@@ -1,22 +1,30 @@
 import React, {useEffect, useState} from 'react';
 import {
+  Dimensions,
   FlatList,
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import TextElement from '../components/TextElement';
 import Colors from '../assets/colors.json';
+import EmptyIcon from '../assets/vectors/empty.svg';
 import {clearStorage, getFromStorage} from '../utils/asyncStorage';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-interface RepositoryScreenPropsType {}
+type RootStackParamList = {
+  navigation: never;
+  route: never;
+};
+
+type RepositoryScreenType = NativeStackScreenProps<RootStackParamList>;
 
 const {fs} = ReactNativeBlobUtil;
 
-const RepositoryScreen: React.FC<RepositoryScreenPropsType> = () => {
+const RepositoryScreen: React.FC<RepositoryScreenType> = ({navigation}) => {
   const [repository, setRepository] = useState<string[]>([]);
-  console.log(repository);
 
   useEffect(() => {
     // clearStorage();
@@ -32,27 +40,54 @@ const RepositoryScreen: React.FC<RepositoryScreenPropsType> = () => {
   };
 
   const onFile = (path: string) => {
-    fs.readFile(path, 'utf8').then(data => {
-      console.log(data);
+    fs.readFile(path, 'utf8').then(async data => {
+      const title = path.split('Download/')[1].replace('.txt', '');
+      // @ts-ignore:
+      navigation.navigate('viewer', {content: data, title});
     });
   };
 
   return (
     <SafeAreaView style={styles.screen}>
-      <TextElement fontSize={'xl'}>Your Repository:</TextElement>
-      <FlatList
-        data={repository}
-        keyExtractor={itemDate => itemDate}
-        renderItem={({item}) => (
-          <TouchableOpacity
-            style={styles.repoItem}
-            onPress={onFile.bind(this, item)}>
-            <TextElement fontSize={'sm'}>
-              {item.split('Download/')[1].replace('.txt', '')}
-            </TextElement>
-          </TouchableOpacity>
-        )}
-      />
+      <View style={styles.header}>
+        <TextElement
+          fontSize={'xl'}
+          fontWeight={'bold'}
+          cStyle={{color: Colors.secondary}}>
+          Your Repository
+        </TextElement>
+      </View>
+      {repository.length ? (
+        <FlatList
+          data={repository}
+          keyExtractor={itemDate => itemDate}
+          contentContainerStyle={styles.repoContianer}
+          renderItem={({item, index}) => (
+            <TouchableOpacity
+              style={styles.repoItem}
+              onPress={onFile.bind(this, item)}>
+              <TextElement
+                cStyle={{color: Colors.white}}
+                fontWeight={'bold'}
+                fontSize={'sm'}>
+                {`${index + 1}. ${item
+                  .split('Download/')[1]
+                  .replace('.txt', '')}`}
+              </TextElement>
+            </TouchableOpacity>
+          )}
+        />
+      ) : (
+        <View style={styles.emptyContainer}>
+          <TextElement fontSize={'lg'} fontWeight={'bold'}>
+            - Empty list -
+          </TextElement>
+          <TextElement fontSize={'m'} cStyle={styles.underline}>
+            Upload some pdf to see some content
+          </TextElement>
+          <EmptyIcon />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -61,16 +96,34 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: Colors.white,
+    alignItems: 'center',
+    paddingTop: '8%',
+  },
+  header: {
+    width: Dimensions.get('window').width * 0.85,
+  },
+  repoContianer: {
+    width: Dimensions.get('window').width * 0.85,
+    alignSelf: 'center',
   },
   repoItem: {
-    width: '85%',
-    height: 40,
-    backgroundColor: 'red',
-    margin: 2,
+    height: Dimensions.get('window').height * 0.06,
+    backgroundColor: Colors.secondary,
+    marginVertical: '2%',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'flex-start',
     paddingHorizontal: '4%',
+    elevation: 3,
+  },
+  emptyContainer: {
+    position: 'absolute',
+    top: '40%',
+    alignItems: 'center',
+  },
+  underline: {
+    marginVertical: '4%',
+    textDecorationLine: 'underline',
   },
 });
 

@@ -16,7 +16,7 @@ const TextElement: React.FC<TextElementType> = ({
   cStyle = {},
 }) => {
   const setFontSize = (size: string) =>
-    size === 'sm' ? 14 : size === 'm' ? 18 : size === 'lg' ? 20 : 38;
+    size === 'sm' ? 14 : size === 'm' ? 18 : size === 'lg' ? 24 : 38;
 
   const setFontFamily = (font?: string) => {
     return font === 'bold'
