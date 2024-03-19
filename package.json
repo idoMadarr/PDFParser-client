@@ -7,7 +7,9 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "apk": "cd android && ./gradlew assembleRelease",
+    "aab": "cd android && ./gradlew bundleRelease"
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4.6.1",
@@ -15,6 +17,7 @@
     "@react-navigation/native": "^6.1.15",
     "@react-navigation/native-stack": "^6.9.23",
     "axios": "^1.6.7",
+    "lottie-react-native": "^6.7.0",
     "react": "18.2.0",
     "react-native": "0.73.5",
     "react-native-blob-util": "^0.19.8",

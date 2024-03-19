@@ -20,6 +20,7 @@ import {writeFile} from '../utils/fileStorage';
 import RepoIcon from '../assets/vectors/repo.svg';
 import LoadingOverlay from '../components/LoadingOverlay';
 import Config from 'react-native-config';
+import LottieView from 'lottie-react-native';
 
 const defaultState = {
   title: '',
@@ -154,13 +155,19 @@ const ConvertorScreen: React.FC<ConvertorScreenType> = ({navigation}) => {
       <TouchableOpacity
         onPress={selectPdf}
         style={styles.button}
-        activeOpacity={0.8}>
+        activeOpacity={0.95}>
         <TextElement fontWeight={'bold'} cStyle={styles.white} fontSize={'lg'}>
           Upload PDF
         </TextElement>
         <TextElement cStyle={styles.white} fontSize={'sm'}>
           (local device)
         </TextElement>
+        <LottieView
+          source={require('../assets/lottie/circles.json')}
+          autoPlay={true}
+          loop={true}
+          style={styles.lottie}
+        />
       </TouchableOpacity>
       <View style={styles.availableSection}>
         <TextElement fontSize={'sm'}>
@@ -220,6 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: 200,
     backgroundColor: Colors.secondary,
     elevation: 16,
+    zIndex: 200,
   },
   titleContainer: {
     justifyContent: 'space-around',
@@ -240,6 +248,15 @@ const styles = StyleSheet.create({
   availableSection: {
     height: '20%',
     justifyContent: 'flex-end',
+  },
+  lottie: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    zIndex: 100,
+    transform: [{scale: 1.4}],
+    width: '100%',
+    height: '100%',
   },
 });
 

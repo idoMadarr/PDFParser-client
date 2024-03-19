@@ -9,6 +9,7 @@ import {
 import TextElement from '../components/TextElement';
 import * as Colors from '../assets/colors.json';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import ArrowIcon from '../assets/vectors/arrowright.svg';
 
 type RootStackParamList = {
   route: never;
@@ -16,7 +17,7 @@ type RootStackParamList = {
 
 type ViewerScreenType = NativeStackScreenProps<RootStackParamList>;
 
-const ViewerScreen: React.FC<ViewerScreenType> = ({route}) => {
+const ViewerScreen: React.FC<ViewerScreenType> = ({route, navigation}) => {
   // @ts-ignore:
   const content = route.params!.content as string;
   // @ts-ignore:
@@ -31,9 +32,16 @@ const ViewerScreen: React.FC<ViewerScreenType> = ({route}) => {
 
   return (
     <View style={styles.modalContainer}>
-      <TextElement cStyle={styles.black} fontSize={'lg'} fontWeight={'bold'}>
-        {title}
-      </TextElement>
+      <View style={styles.header}>
+        <TextElement cStyle={styles.black} fontSize={'lg'} fontWeight={'bold'}>
+          {title}
+        </TextElement>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.arrowContainer}>
+          <ArrowIcon />
+        </TouchableOpacity>
+      </View>
       <View style={styles.scrollview}>
         <ScrollView>
           <TextElement fontSize={'m'}>{content.trim()}</TextElement>
@@ -63,6 +71,11 @@ const styles = StyleSheet.create({
     padding: '5%',
     backgroundColor: Colors.white,
   },
+  header: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
   scrollview: {
     height: '85%',
     borderWidth: 1,
@@ -89,6 +102,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  arrowContainer: {
+    padding: '4%',
   },
 });
 

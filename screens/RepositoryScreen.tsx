@@ -11,6 +11,7 @@ import ReactNativeBlobUtil from 'react-native-blob-util';
 import TextElement from '../components/TextElement';
 import Colors from '../assets/colors.json';
 import EmptyIcon from '../assets/vectors/empty.svg';
+import ArrowIcon from '../assets/vectors/arrowright.svg';
 import {clearStorage, getFromStorage} from '../utils/asyncStorage';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
@@ -56,6 +57,11 @@ const RepositoryScreen: React.FC<RepositoryScreenType> = ({navigation}) => {
           cStyle={{color: Colors.secondary}}>
           Your Repository
         </TextElement>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.arrowContainer}>
+          <ArrowIcon />
+        </TouchableOpacity>
       </View>
       {repository.length ? (
         <FlatList
@@ -101,6 +107,9 @@ const styles = StyleSheet.create({
   },
   header: {
     width: Dimensions.get('window').width * 0.85,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   repoContianer: {
     width: Dimensions.get('window').width * 0.85,
@@ -124,6 +133,9 @@ const styles = StyleSheet.create({
   underline: {
     marginVertical: '4%',
     textDecorationLine: 'underline',
+  },
+  arrowContainer: {
+    padding: '4%',
   },
 });
 
