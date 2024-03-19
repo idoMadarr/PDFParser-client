@@ -54,7 +54,7 @@ const RepositoryScreen: React.FC<RepositoryScreenType> = ({navigation}) => {
         <TextElement
           fontSize={'xl'}
           fontWeight={'bold'}
-          cStyle={{color: Colors.secondary}}>
+          cStyle={{color: Colors.primary}}>
           Your Repository
         </TextElement>
         <TouchableOpacity
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   },
   repoItem: {
     height: Dimensions.get('window').height * 0.06,
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.primary,
     marginVertical: '2%',
     borderRadius: 8,
     justifyContent: 'center',

@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   title: {
-    color: Colors.secondary,
+    color: Colors.primary,
   },
   button: {
     alignItems: 'center',
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.55,
     height: Dimensions.get('window').width * 0.55,
     borderRadius: 200,
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.primary,
     elevation: 16,
     zIndex: 200,
   },

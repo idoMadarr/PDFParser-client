@@ -48,7 +48,7 @@ const MainModal: React.FC<MainModalPropsType> = ({
         </TouchableOpacity>
         <TouchableOpacity
           onPress={shareDocument}
-          style={[styles.button, {backgroundColor: Colors.secondary}]}
+          style={[styles.button, {backgroundColor: Colors.primary}]}
           activeOpacity={0.8}>
           <TextElement cStyle={styles.white} fontSize={'m'}>
             Share Document

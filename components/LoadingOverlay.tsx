@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    zIndex: 100,
+    zIndex: 300,
   },
   white: {
     color: Colors.white,

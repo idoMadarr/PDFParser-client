@@ -49,7 +49,7 @@ const InitScreen: React.FC<InitScreenType> = ({navigation}) => {
       </TextElement>
       <ActivityIndicator
         size={'small'}
-        color={Colors.secondary}
+        color={Colors.primary}
         style={styles.spinner}
       />
     </SafeAreaView>

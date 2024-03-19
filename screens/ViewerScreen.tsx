@@ -50,7 +50,7 @@ const ViewerScreen: React.FC<ViewerScreenType> = ({route, navigation}) => {
       <View style={styles.controllerContainer}>
         <TouchableOpacity
           onPress={shareDocument}
-          style={[styles.button, {backgroundColor: Colors.secondary}]}
+          style={[styles.button, {backgroundColor: Colors.primary}]}
           activeOpacity={0.8}>
           <TextElement cStyle={styles.white} fontSize={'m'}>
             Share Content
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   scrollview: {
     height: '85%',
     borderWidth: 1,
-    borderColor: Colors.secondary,
+    borderColor: Colors.primary,
     borderRadius: 8,
     overflow: 'hidden',
     padding: '4%',
